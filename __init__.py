@@ -202,8 +202,9 @@ def register_nodes():
         nodeclass=getattr(module, node)
         bpy.utils.register_class(nodeclass)    
         itemlist.append(NodeItem(node))
-    node_categories=[ShaderNodesExtraCategory("SH_EXTRA", "Custom Nodes", items=itemlist)]    
-    nodeitems_utils.register_node_categories("Custom Nodes", node_categories)    
+    if itemslist:
+	node_categories=[ShaderNodesExtraCategory("SH_EXTRA", "Custom Nodes", items=itemlist)]    
+    	nodeitems_utils.register_node_categories("Custom Nodes", node_categories)    
 
 def unregister_nodes(ignore=''):            
     for node in Nodes.listNodes():
