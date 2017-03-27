@@ -194,7 +194,6 @@ class ShaderNodesExtraCategory(NodeCategory):
         return (context.space_data.tree_type == 'ShaderNodeTree' and
                 context.scene.render.use_shading_nodes)
 
-
 def register_nodes():
     itemlist=[]
     for node in Nodes.listNodes():
@@ -202,7 +201,7 @@ def register_nodes():
         nodeclass=getattr(module, node)
         bpy.utils.register_class(nodeclass)    
         itemlist.append(NodeItem(node))
-    if itemslist:
+    if itemlist:
         node_categories=[ShaderNodesExtraCategory("SH_EXTRA", "Custom Nodes", items=itemlist)]    
         nodeitems_utils.register_node_categories("Custom Nodes", node_categories)    
 
@@ -216,15 +215,9 @@ def register():
     bpy.utils.register_class(NodeGroupConvert)
     register_nodes()
 
-
-
-
-
 def unregister():
     bpy.utils.unregister_class(NodeGroupConvert)
     unregister_nodes()
-
-
 
 if __name__ == "__main__":
     register()
