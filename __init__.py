@@ -208,8 +208,9 @@ def register_nodes():
 def unregister_nodes(ignore=''):            
     for node in Nodes.listNodes():
         if node!=ignore:
-            bpy.utils.unregister_class(getattr(bpy.types, node))    
-    nodeitems_utils.unregister_node_categories("Custom Nodes")
+            bpy.utils.unregister_class(getattr(bpy.types, node))
+    if Nodes.listNodes()[0]!=ignore:
+        nodeitems_utils.unregister_node_categories("Custom Nodes")
 
 def register():
     bpy.utils.register_class(NodeGroupConvert)
