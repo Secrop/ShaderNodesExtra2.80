@@ -1,7 +1,7 @@
 import bpy
 
 class ShaderNodeBase(bpy.types.NodeCustomGroup):
-        
+      
     def __path_resolve__(self, obj, path):
         if "." in path:
             extrapath, path= path.rsplit(".", 1)
