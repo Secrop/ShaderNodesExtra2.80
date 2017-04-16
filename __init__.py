@@ -1,4 +1,5 @@
-﻿bl_info = {
+
+bl_info = {
     "name": "ShaderNodesExtra",
     "author": "Secrop",
     "version": (0, 1, 5),
