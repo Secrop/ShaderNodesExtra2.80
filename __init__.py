@@ -335,12 +335,12 @@ def revertBlender():
 
 def register():
     #to hide nodes private trees from the group menu, uncomment the following line, and the revertBlender in unregister()
-    #configBlender()
+    configBlender()
     bpy.utils.register_class(NodeGroupConvert)
     register_nodes()
 
 def unregister():
-    #revertBlender()
+    revertBlender()
     bpy.utils.unregister_class(NodeGroupConvert)
     unregister_nodes()
 
