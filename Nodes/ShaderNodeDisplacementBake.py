@@ -209,8 +209,8 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
             row.prop_search(self, "uvmap", context.active_object.data, "uv_layers", icon='GROUP_UVS')
     
     def draw_buttons_ext(self, context, layout):
-        row=layout.row()
-        row.prop(self, 'display', text='Interface:')
+        if self.outvalue=='3':
+            layout.prop(self, 'display', text='Interface:')
     
     def free(self):
         bpy.data.node_groups.remove(self.node_tree)    
