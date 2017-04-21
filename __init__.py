@@ -26,7 +26,7 @@ menu_def_name='Custom Nodes'
 
 
 def NodesPath():
-    path=os.path.dirname(os.path.realpath(__file__)) + '\\Nodes'
+    path=os.path.dirname(os.path.realpath(__file__)) + '/Nodes'
     return path
 
 def exportNodetree(nodetree, bl_name, bl_label):
@@ -110,7 +110,7 @@ def exportNodetree(nodetree, bl_name, bl_label):
             result+=flt
         return result
 
-    filepath=NodesPath() +'\\' + bl_name + '.py'
+    filepath=NodesPath() +'/' + bl_name + '.py'
     file=open(filepath, 'w')
     file.write('import bpy\n')
     file.write('from ShaderNodeBase import ShaderNodeBase\n\n')
