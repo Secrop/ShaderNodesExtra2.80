@@ -148,11 +148,11 @@ class ShaderNodeNormalBake(bpy.types.NodeCustomGroup):
         
     def draw_buttons(self, context, layout):
         row=layout.row(align=True)
-        row.alert=(self.axis_X==self.axis_Y or self.axis_X==self.axis_Z)
+        row.alert=(self.axis_X.lstrip('-')==self.axis_Y.lstrip('-') or self.axis_X.lstrip('-')==self.axis_Z.lstrip('-'))
         row.prop(self, 'axis_X', text='')  
-        row.alert=(self.axis_Y==self.axis_X or self.axis_Y==self.axis_Z)
+        row.alert=(self.axis_Y.lstrip('-')==self.axis_X.lstrip('-') or self.axis_Y.lstrip('-')==self.axis_Z.lstrip('-'))
         row.prop(self, 'axis_Y', text='')
-        row.alert=(self.axis_Z==self.axis_X or self.axis_Z==self.axis_Y)
+        row.alert=(self.axis_Z.lstrip('-')==self.axis_X.lstrip('-') or self.axis_Z.lstrip('-')==self.axis_Y.lstrip('-'))
         row.prop(self, 'axis_Z', text='')
         row=layout.row()
         row.prop_search(self, "uvmap", context.active_object.data, "uv_layers", icon='GROUP_UVS')
