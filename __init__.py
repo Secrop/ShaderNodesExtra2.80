@@ -203,6 +203,7 @@ def unregister_node(node):
     else:
         catid, catname= menu_def_id, menu_def_name
     node_menu_exclude(catid, catname, nodeclass)
+    bpy.utils.unregister_class(nodeclass)
 
 def register_nodes():
     for node in Nodes.listNodes():
