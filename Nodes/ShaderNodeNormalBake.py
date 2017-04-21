@@ -1,6 +1,6 @@
 
 #
-#   Node Authors: nudelZ, Secrop
+#   Node Authors: Secrop
 #
 #   Node Description: Utility node for baking various Displacement maps
 #
