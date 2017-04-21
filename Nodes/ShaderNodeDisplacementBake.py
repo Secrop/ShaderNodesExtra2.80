@@ -156,7 +156,7 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
     def init(self, context):
         self.width = 200
         self.node_tree = bpy.data.node_groups.new(self.bl_name+'nodetree', 'ShaderNodeTree')
-        #self.node_tree.is_hidden=True
+        self.node_tree.is_hidden=True
         self.addNodes([('NodeGroupInput', {'name':'Group Input'}),
             ('NodeGroupOutput', {'name':'Group Output'}),
             ('ShaderNodeEmission', {'name':'Emission'}),
