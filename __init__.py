@@ -2,7 +2,7 @@
 bl_info = {
     "name": "ShaderNodesExtra",
     "author": "Secrop",
-    "version": (0, 1, 5),
+    "version": (0, 1, 6),
     "blender": (2, 78, 0),
     "location": "Node",
     "description": "Tools for NodeGroups",
@@ -197,6 +197,7 @@ def register_node(node):
     node_menu_include(catid, catname, nodeclass)
 
 def unregister_node(node):
+    nodeclass=getattr(bpy.types, node)
     if hasattr(nodeclass, 'draw_menu'):
         catid, catname=nodeclass.draw_menu()
     else:
@@ -228,7 +229,7 @@ def node_menu_include(catid, catname, node):
 def node_menu_exclude(catid, catname, node):
     index, ident, cat, mt, pt=getCategory(catid, catname)
     if cat:
-        itemslist=list(cat.items(Context=None))
+        itemslist=list(cat.items(context=None))
         for i in itemslist:
             if i.nodetype==node.bl_name:
                 itemslist.remove(i)
