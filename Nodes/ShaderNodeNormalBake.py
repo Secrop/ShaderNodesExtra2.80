@@ -44,7 +44,7 @@ class ShaderNodeNormalBake(bpy.types.NodeCustomGroup):
                 else:
                     socketTo=self.node_tree.path_resolve(link[1])
             self.node_tree.links.new(socketFrom, socketTo)
- 
+
     def addInputs(self, inputs):
         for inputitem in inputs:
             name = inputitem[1].pop('name')
@@ -113,9 +113,10 @@ class ShaderNodeNormalBake(bpy.types.NodeCustomGroup):
             ('ShaderNodeInvert', {'name':'Invert', 'inputs[0].default_value':1.000}),
             ('ShaderNodeSeparateRGB', {'name':'Negative'}),
             ('ShaderNodeSeparateRGB', {'name':'Positive'}),
-            ('ShaderNodeCombineRGB', {'name':'FinalCombine', 'inputs[0].default_value':0.000, 'inputs[1].default_value':0.000, 'inputs[2].default_value':0.000})])       
+            ('ShaderNodeCombineRGB', {'name':'FinalCombine', 'inputs[0].default_value':0.000, 'inputs[1].default_value':0.000, 'inputs[2].default_value':0.000}),
+            ('ShaderNodeEmission', {'name':'EmiClosure', 'inputs[1].default_value':1.0})])       
         self.addInputs([('NodeSocketVector', {'name':'Normal', 'hide_value':True})])        
-        self.addOutputs([('NodeSocketColor', {'name':'Color', 'default_value':[0.5,0.5,1.0,1.0]})])
+        self.addOutputs([('NodeSocketShader', {'name':'Tangent'})])
         self.addLinks([('nodes["Geometry"].outputs[1]', 'nodes["CoTangent"].inputs[0]'),
             ('nodes["Tangent"].outputs[0]', 'nodes["CoTangent"].inputs[1]'),
             ('nodes["Geometry"].outputs[1]', 'nodes["ZDot"].inputs[1]'),
@@ -136,7 +137,8 @@ class ShaderNodeNormalBake(bpy.types.NodeCustomGroup):
             ('nodes["Positive"].outputs[0]', 'nodes["FinalCombine"].inputs[0]'),
             ('nodes["Positive"].outputs[1]', 'nodes["FinalCombine"].inputs[1]'),
             ('nodes["Positive"].outputs[2]', 'nodes["FinalCombine"].inputs[2]'),
-            ('nodes["FinalCombine"].outputs[0]', 'outputs[0]')])
+            ('nodes["FinalCombine"].outputs[0]', 'nodes["EmiClosure"].inputs[0]'),
+            ('nodes["EmiClosure"].outputs[0]', 'outputs[0]')])
 
     def copy(self, node):
         self.node_tree=node.node_tree.copy()
