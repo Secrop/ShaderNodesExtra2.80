@@ -109,10 +109,8 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
                 self.node_tree.links.remove(tosocket.links[0])
             self.node_tree.links.new(fromsocket, tosocket)
             if cmp.startswith('-'):
-                print('making ', i, ' equal to -1')
                 self.node_tree.nodes['FlipArray'].inputs[i].default_value=-1
             else:
-                print('making ', i, ' equal to 1')    
                 self.node_tree.nodes['FlipArray'].inputs[i].default_value=1
 
     def uvmapupdate(self, context):
@@ -142,7 +140,7 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
                 input=self.node_tree.nodes['YDot'].outputs[1]
             else:
                 input=self.node_tree.nodes['Multiply'].outputs[0]
-            self.axisupdate(context)
+                self.axisupdate(context)
             self.node_tree.links.new(input , nexit.inputs[0])                
             self.node_tree.links.new(self.node_tree.nodes['Group Input'].outputs[1], nexit.inputs[1])
 
