@@ -54,7 +54,7 @@ class ShaderNodeNormalBake(bpy.types.NodeCustomGroup):
                 if attr in ['default_value', 'hide', 'hide_value']:
                     self.value_set(socket, attr, inputitem[1][attr])
                 else:
-                    self.value_set(socketInterface, attr, inputitem[attr])
+                    self.value_set(socketInterface, attr, inputitem[1][attr])
             
     def addOutputs(self, outputs):
         for outputitem in outputs:
