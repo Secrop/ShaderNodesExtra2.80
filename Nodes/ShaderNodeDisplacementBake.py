@@ -100,7 +100,10 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
         if (self.axis_X.lstrip('-')==self.axis_Y.lstrip('-')) or (self.axis_X.lstrip('-')==self.axis_Z.lstrip('-')) or (self.axis_Y.lstrip('-')==self.axis_Z.lstrip('-')):
             return
         for i, cmp in enumerate([self.axis_X, self.axis_Y, self.axis_Z]):
-            fromsocket=self.node_tree.nodes[cmp.lstrip('-')+'Dot'].outputs[1]
+            if self.outvalue=='2':
+                fromsocket=self.node_tree.nodes["WorldSep"].outputs[i]
+            elif self.outvalue=='3':    
+                fromsocket=self.node_tree.nodes[cmp.lstrip('-')+'Dot'].outputs[1]
             tosocket=self.node_tree.nodes['Combine XYZ'].inputs[i]
             if tosocket.is_linked:
                 self.node_tree.links.remove(tosocket.links[0])
@@ -137,10 +140,9 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
             self.inputs[1].hide=False
             if self.outvalue=='1':
                 input=self.node_tree.nodes['YDot'].outputs[1]
-            elif self.outvalue=='2':
-                input=self.node_tree.nodes['SubPosition'].outputs[0]
-            elif self.outvalue=='3':
+            else:
                 input=self.node_tree.nodes['Multiply'].outputs[0]
+            self.axisupdate(context)
             self.node_tree.links.new(input , nexit.inputs[0])                
             self.node_tree.links.new(self.node_tree.nodes['Group Input'].outputs[1], nexit.inputs[1])
 
@@ -150,7 +152,7 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
     axis_Z = bpy.props.EnumProperty(default = 'Z',items = axis_items, name = "Z_list", update = axisupdate)                                                 
     zenum = bpy.props.IntProperty(default = 25, name = 'FlipAndSwitch', min = 1, max = 48, update = enumupdate)
     uvmap = bpy.props.StringProperty(name = 'UV Map',default = '', update = uvmapupdate)
-    display = bpy.props.EnumProperty(default = 'fas' , items = (('xyz','XYZ', 'Custom XYZ'),('fas', 'FlipAndSwitch', 'Zbrush Compatible')))
+    display = bpy.props.EnumProperty(default = 'FlipAndSwitch' , items = (('XYZ','XYZ', 'Custom XYZ'),('FlipAndSwitch', 'ZBrush', 'Zbrush Compatible'))) # to be added : , ('Presets', 'Presets', 'Presets')
     outvalue = bpy.props.EnumProperty(default = '0' , items = output_items, name = 'Output', update=outputupdate)
     
     def init(self, context):
@@ -163,6 +165,7 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
             ('ShaderNodeNewGeometry', {'name':'Geometry'}),
             ('ShaderNodeTangent', {'name':'Tangent', 'direction_type':'UV_MAP'}),
             ('ShaderNodeVectorMath', {'name':'SubPosition', 'operation':'SUBTRACT'}),
+            ('ShaderNodeSeparateXYZ', {'name':'WorldSep'}),
             ('ShaderNodeVectorMath', {'name':'XDot', 'operation':'DOT_PRODUCT'}),
             ('ShaderNodeVectorMath', {'name':'ZDot', 'operation':'DOT_PRODUCT'}),
             ('ShaderNodeVectorMath', {'name':'YDot', 'operation':'DOT_PRODUCT'}),
@@ -185,6 +188,7 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
             ('nodes["SubPosition"].outputs[0]', 'nodes["XDot"].inputs[0]'),
             ('nodes["SubPosition"].outputs[0]', 'nodes["YDot"].inputs[0]'),
             ('nodes["SubPosition"].outputs[0]', 'nodes["ZDot"].inputs[0]'),
+            ('nodes["SubPosition"].outputs[0]', 'nodes["WorldSep"].inputs[0]'),
             ('nodes["FlipArray"].outputs[0]', 'nodes["Multiply"].inputs[1]'),
             ('nodes["Combine XYZ"].outputs[0]', 'nodes["Multiply"].inputs[2]'),
             ('nodes["XDot"].outputs[1]', 'nodes["Combine XYZ"].inputs[0]'),
@@ -193,11 +197,11 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
 
     def draw_buttons(self, context, layout):
         layout.prop(self, 'outvalue', text='')
-        if self.outvalue=='3':
-            if self.display=='fas':
+        if self.outvalue=='2' or self.outvalue=='3':
+            if self.display=='FlipAndSwitch':
                 row=layout.row()
                 row.prop(self, 'zenum', text='FlipAndSwitch:')
-            elif self.display=='xyz':
+            elif self.display=='XYZ':
                 row=layout.row(align=True)
                 row.alert=(self.axis_X.lstrip('-')==self.axis_Y.lstrip('-') or self.axis_X.lstrip('-')==self.axis_Z.lstrip('-'))
                 row.prop(self, 'axis_X', text='')  
@@ -205,11 +209,12 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
                 row.prop(self, 'axis_Y', text='')
                 row.alert=(self.axis_Z.lstrip('-')==self.axis_X.lstrip('-') or self.axis_Z.lstrip('-')==self.axis_Y.lstrip('-'))
                 row.prop(self, 'axis_Z', text='')
-            row=layout.row()
-            row.prop_search(self, "uvmap", context.active_object.data, "uv_layers", icon='GROUP_UVS')
+            if self.outvalue=='3':
+                row=layout.row()
+                row.prop_search(self, "uvmap", context.active_object.data, "uv_layers", icon='GROUP_UVS')
     
     def draw_buttons_ext(self, context, layout):
-        if self.outvalue=='3':
+        if self.outvalue=='2' or self.outvalue=='3':
             layout.prop(self, 'display', text='Interface:')
     
     def free(self):
