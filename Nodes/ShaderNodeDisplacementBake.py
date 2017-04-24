@@ -195,7 +195,15 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
 
     def draw_buttons(self, context, layout):
         layout.prop(self, 'outvalue', text='')
-        if self.outvalue=='2' or self.outvalue=='3':
+        if self.outvalue=='2':
+            row=layout.row(align=True)
+            row.alert=(self.axis_X.lstrip('-')==self.axis_Y.lstrip('-') or self.axis_X.lstrip('-')==self.axis_Z.lstrip('-'))
+            row.prop(self, 'axis_X', text='')  
+            row.alert=(self.axis_Y.lstrip('-')==self.axis_X.lstrip('-') or self.axis_Y.lstrip('-')==self.axis_Z.lstrip('-'))
+            row.prop(self, 'axis_Y', text='')
+            row.alert=(self.axis_Z.lstrip('-')==self.axis_X.lstrip('-') or self.axis_Z.lstrip('-')==self.axis_Y.lstrip('-'))
+            row.prop(self, 'axis_Z', text='')
+        elif self.outvalue=='3':
             if self.display=='FlipAndSwitch':
                 row=layout.row()
                 row.prop(self, 'zenum', text='FlipAndSwitch:')
@@ -207,12 +215,12 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
                 row.prop(self, 'axis_Y', text='')
                 row.alert=(self.axis_Z.lstrip('-')==self.axis_X.lstrip('-') or self.axis_Z.lstrip('-')==self.axis_Y.lstrip('-'))
                 row.prop(self, 'axis_Z', text='')
-            if self.outvalue=='3':
-                row=layout.row()
-                row.prop_search(self, "uvmap", context.active_object.data, "uv_layers", icon='GROUP_UVS')
+            row=layout.row()
+            row.prop_search(self, "uvmap", context.active_object.data, "uv_layers", icon='GROUP_UVS')        
+
     
     def draw_buttons_ext(self, context, layout):
-        if self.outvalue=='2' or self.outvalue=='3':
+        if self.outvalue=='3':
             layout.prop(self, 'display', text='Interface:')
     
     def copy(self, node):
