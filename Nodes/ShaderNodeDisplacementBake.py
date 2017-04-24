@@ -215,6 +215,9 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
         if self.outvalue=='2' or self.outvalue=='3':
             layout.prop(self, 'display', text='Interface:')
     
+    def copy(self, node):
+        self.node_tree=node.node_tree.copy()    
+    
     def free(self):
         bpy.data.node_groups.remove(self.node_tree)    
 
