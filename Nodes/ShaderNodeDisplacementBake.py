@@ -4,69 +4,18 @@
 #
 #   Node Description: Utility node for baking various Displacement maps
 #
-#   version: (0,1,0)
+#   version: (0,1,1)
 #
 
 import bpy
+from ShaderNodeBase import ShaderNodeCompact
 
-class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
+class ShaderNodeDisplacementBake(ShaderNodeCompact):
     
     bl_name='ShaderNodeDisplacementBake'
     bl_label='Displacement Bake'
     bl_icon='NONE'
     
-    def __path_resolve__(self, obj, path):
-        if "." in path:
-            extrapath, path= path.rsplit(".", 1)
-            obj = obj.path_resolve(extrapath)
-        return obj, path
-            
-    def value_set(self, obj, path, val):
-        obj, path=self.__path_resolve__(obj, path)
-        setattr(obj, path, val)                
-
-    def addNodes(self, nodes):
-        for nodeitem in nodes:
-            node=self.node_tree.nodes.new(nodeitem[0])
-            for attr in nodeitem[1]:
-                self.value_set(node, attr, nodeitem[1][attr])
-
-    def addLinks(self, links):
-        for link in links:
-            if isinstance(link[0], str):
-                if link[0].startswith('inputs'):
-                    socketFrom=self.node_tree.path_resolve('nodes["Group Input"].outputs' + link[0][link[0].rindex('['):])
-                else:
-                    socketFrom=self.node_tree.path_resolve(link[0])
-            if isinstance(link[1], str):
-                if link[1].startswith('outputs'):
-                    socketTo=self.node_tree.path_resolve('nodes["Group Output"].inputs' + link[1][link[1].rindex('['):])
-                else:
-                    socketTo=self.node_tree.path_resolve(link[1])
-            self.node_tree.links.new(socketFrom, socketTo)
-
-    def addInputs(self, inputs):
-        for inputitem in inputs:
-            name = inputitem[1].pop('name')
-            socketInterface=self.node_tree.inputs.new(inputitem[0], name)
-            socket=self.path_resolve(socketInterface.path_from_id())
-            for attr in inputitem[1]:
-                if attr in ['default_value', 'hide', 'hide_value']:
-                    self.value_set(socket, attr, inputitem[1][attr])
-                else:
-                    self.value_set(socketInterface, attr, inputitem[1][attr])
-            
-    def addOutputs(self, outputs):
-        for outputitem in outputs:
-            name = outputitem[1].pop('name')
-            socketInterface=self.node_tree.outputs.new(outputitem[0], name)
-            socket=self.path_resolve(socketInterface.path_from_id())
-            for attr in outputitem[1]:
-                if attr in ['default_value', 'hide', 'hide_value']:
-                    self.value_set(socket, attr, outputitem[1][attr])
-                else:
-                    self.value_set(socketInterface, attr, outputitem[1][attr])
-
     axis_items=(('X', 'X', 'POS_X'),
             ('-X', '-X', 'NEG_X'),
             ('Y', 'Y', 'POS_Y'),
@@ -175,9 +124,9 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
             ('NodeSocketFloat', {'name':'Scale', 'default_value':1.0, 'min_value':0.0, 'max_value':10.0, 'hide':True})])
         self.addOutputs([('NodeSocketShader', {'name':'Vector'})])
         self.addLinks([('nodes["Vector Math"].outputs[0]', 'nodes["ZDot"].inputs[1]'),
-            ('nodes["Group Input"].outputs[0]', 'nodes["SubPosition"].inputs[0]'),
+            ('inputs[0]', 'nodes["SubPosition"].inputs[0]'),
             ('nodes["Geometry"].outputs[0]', 'nodes["Emission"].inputs[0]'),
-            ('nodes["Emission"].outputs[0]', 'nodes["Group Output"].inputs[0]'),
+            ('nodes["Emission"].outputs[0]', 'outputs[0]'),
             ('nodes["Geometry"].outputs[0]', 'nodes["SubPosition"].inputs[1]'),
             ('nodes["Geometry"].outputs[1]', 'nodes["Vector Math"].inputs[0]'),
             ('nodes["Geometry"].outputs[1]', 'nodes["YDot"].inputs[1]'),
@@ -218,14 +167,13 @@ class ShaderNodeDisplacementBake(bpy.types.NodeCustomGroup):
             row=layout.row()
             row.prop_search(self, "uvmap", context.active_object.data, "uv_layers", icon='GROUP_UVS')        
 
-    
     def draw_buttons_ext(self, context, layout):
         if self.outvalue=='3':
             layout.prop(self, 'display', text='Interface:')
-    
+            
     def copy(self, node):
-        self.node_tree=node.node_tree.copy()    
-    
+        self.node_tree=node.node_tree.copy()      
+     
     def free(self):
         bpy.data.node_groups.remove(self.node_tree)    
 
