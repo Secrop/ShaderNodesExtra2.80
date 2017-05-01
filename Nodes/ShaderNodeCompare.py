@@ -35,12 +35,12 @@ class ShaderNodeCompare(ShaderNodeCompact):
                 ('ShaderNodeMath', {'name':'NotEqual', 'operation':'GREATER_THAN', 'use_clamp':0.0, 'inputs[1].default_value':0.500})])
             self.addInputs([('NodeSocketFloat', {'name':'A', 'default_value':0.500, 'min_value':-10000.0, 'max_value':10000.0}),
                 ('NodeSocketFloat', {'name':'B', 'default_value':0.500, 'min_value':-10000.0, 'max_value':10000.0})])
-            self.addOutputs([('NodeSocketFloat', {'name':'Value', 'hide':True}),
-                ('NodeSocketFloat', {'name':'Value', 'hide':True}),
-                ('NodeSocketFloat', {'name':'Value'}),
-                ('NodeSocketFloat', {'name':'Value', 'hide':True}),
-                ('NodeSocketFloat', {'name':'Value', 'hide':True}),
-                ('NodeSocketFloat', {'name':'Value', 'hide':True})])
+            self.addOutputs([('NodeSocketInt', {'name':'Value', 'enabled':False}),
+                ('NodeSocketInt', {'name':'Value', 'enabled':False}),
+                ('NodeSocketInt', {'name':'Value'}),
+                ('NodeSocketInt', {'name':'Value', 'enabled':False}),
+                ('NodeSocketInt', {'name':'Value', 'enabled':False}),
+                ('NodeSocketInt', {'name':'Value', 'enabled':False})])
             self.addLinks([('inputs[0]', 'nodes["Greater"].inputs[0]'),
                 ('inputs[1]', 'nodes["Greater"].inputs[1]'),
                 ('inputs[0]', 'nodes["Less"].inputs[0]'),
