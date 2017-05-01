@@ -53,11 +53,15 @@ class ShaderNodeBase(bpy.types.NodeCustomGroup):
                 socketFrom=self.node_tree.path_resolve('nodes["Group Input"].outputs' + socketFrom[socketFrom.rindex('['):])
             else:
                 socketFrom=self.node_tree.path_resolve(socketFrom)
+        else:
+            socketFrom=link[0]
         if isinstance(socketTo, str):
             if socketTo.startswith('outputs'):
                 socketTo=self.node_tree.path_resolve('nodes["Group Output"].inputs' + socketTo[socketTo.rindex('['):])
             else:
                 socketTo=self.node_tree.path_resolve(socketTo)
+        else:
+            socketTo=link[1]
         self.node_tree.links.new(socketFrom, socketTo)
     
     def delLink(self, link):
@@ -97,6 +101,62 @@ class ShaderNodeBase(bpy.types.NodeCustomGroup):
             socket=self.node_tree.path_resolve(socket)
         self.node_tree.outputs.remove(socket)
     
-    def category(self):
-        return 'Extra Nodes'
+class ShaderNodeCompact(bpy.types.NodeCustomGroup):
+    def __path_resolve__(self, obj, path):
+        if "." in path:
+            extrapath, path= path.rsplit(".", 1)
+            obj = obj.path_resolve(extrapath)
+        return obj, path
+            
+    def value_set(self, obj, path, val):
+        obj, path=self.__path_resolve__(obj, path)
+        setattr(obj, path, val)                
+
+    def addNodes(self, nodes):
+        for nodeitem in nodes:
+            node=self.node_tree.nodes.new(nodeitem[0])
+            for attr in nodeitem[1]:
+                self.value_set(node, attr, nodeitem[1][attr])
+
+    def addLinks(self, links):
+        for link in links:
+            if isinstance(link[0], str):
+                if link[0].startswith('inputs'):
+                    socketFrom=self.node_tree.path_resolve('nodes["Group Input"].outputs' + link[0][link[0].rindex('['):])
+                else:
+                    socketFrom=self.node_tree.path_resolve(link[0])
+            else:
+                socketFrom=link[0]
+            if isinstance(link[1], str):
+                if link[1].startswith('outputs'):
+                    socketTo=self.node_tree.path_resolve('nodes["Group Output"].inputs' + link[1][link[1].rindex('['):])
+                else:
+                    socketTo=self.node_tree.path_resolve(link[1])
+            else:
+                socketTo=link[1]
+            self.node_tree.links.new(socketFrom, socketTo)
+
+    def addInputs(self, inputs):
+        for inputitem in inputs:
+            name = inputitem[1].pop('name')
+            socketInterface=self.node_tree.inputs.new(inputitem[0], name)
+            socket=self.path_resolve(socketInterface.path_from_id())
+            for attr in inputitem[1]:
+                if attr in ['default_value', 'hide', 'hide_value', 'enabled']:
+                    self.value_set(socket, attr, inputitem[1][attr])
+                else:
+                    self.value_set(socketInterface, attr, inputitem[1][attr])
+            
+    def addOutputs(self, outputs):
+        for outputitem in outputs:
+            name = outputitem[1].pop('name')
+            socketInterface=self.node_tree.outputs.new(outputitem[0], name)
+            socket=self.path_resolve(socketInterface.path_from_id())
+            for attr in outputitem[1]:
+                if attr in ['default_value', 'hide', 'hide_value', 'enabled']:
+                    self.value_set(socket, attr, outputitem[1][attr])
+                else:
+                    self.value_set(socketInterface, attr, outputitem[1][attr])      
+
+
     
