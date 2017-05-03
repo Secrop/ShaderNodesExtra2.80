@@ -47,7 +47,8 @@ class ShaderNodeNormalBake(ShaderNodeCompact):
 
     def init(self, context):
         self.node_tree = bpy.data.node_groups.new(self.bl_name+'nodetree', 'ShaderNodeTree')
-        self.node_tree.is_hidden=True
+        if hasattr(self.node_tree, 'is:hidden'):
+            self.node_tree.is_hidden=True
         self.addNodes([('NodeGroupInput', {'name':'Group Input'}),
             ('NodeGroupOutput', {'name':'Group Output'}),
             ('ShaderNodeNewGeometry', {'name':'Geometry'}),
@@ -93,7 +94,7 @@ class ShaderNodeNormalBake(ShaderNodeCompact):
         self.node_tree=node.node_tree.copy()
     
     def free(self):
-        bpy.data.node_groups.remove(self.node_tree)
+        bpy.data.node_groups.remove(self.node_tree, do_unlink=True)
         
     def draw_buttons(self, context, layout):
         row=layout.row(align=True)
