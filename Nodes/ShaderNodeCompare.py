@@ -29,22 +29,30 @@ class ShaderNodeCompare(ShaderNodeCompact):
                 ('ShaderNodeMath', {'name':'Math.002', 'operation':'MAXIMUM', 'use_clamp':0.0}),
                 ('ShaderNodeMath', {'name':'Greater', 'operation':'GREATER_THAN', 'use_clamp':0.0}),
                 ('ShaderNodeMath', {'name':'Equal', 'operation':'LESS_THAN', 'use_clamp':0.0, 'inputs[1].default_value':0.500}),
-                ('ShaderNodeMath', {'name':'GreateEqual', 'operation':'MAXIMUM', 'use_clamp':0.0}),
+                ('ShaderNodeMath', {'name':'GreaterEqual', 'operation':'MAXIMUM', 'use_clamp':0.0}),
                 ('ShaderNodeMath', {'name':'LessEqual', 'operation':'MAXIMUM', 'use_clamp':0.0}),
                 ('ShaderNodeMath', {'name':'Less', 'operation':'LESS_THAN', 'use_clamp':0.0}),
-                ('ShaderNodeMath', {'name':'NotEqual', 'operation':'GREATER_THAN', 'use_clamp':0.0, 'inputs[1].default_value':0.500})])
-            self.addInputs([('NodeSocketFloat', {'name':'A', 'default_value':0.500, 'min_value':-10000.0, 'max_value':10000.0}),
+                ('ShaderNodeMath', {'name':'NotEqual', 'operation':'GREATER_THAN', 'use_clamp':0.0, 'inputs[1].default_value':0.500}),
+                ('ShaderNodeMath', {'name':'Sim01', 'operation':'SUBTRACT', 'use_clamp':0.0}),
+                ('ShaderNodeMath', {'name':'Sim02', 'operation':'ABSOLUTE', 'use_clamp':0.0}),
+                ('ShaderNodeMath', {'name':'Similar', 'operation':'LESS_THAN', 'use_clamp':0.0}),])
+            self.addInputs([('NodeSocketFloat', {'name':'Threshold', 'default_value':0.500, 'min_value':0.0, 'max_value':10000.0, 'enabled':False}),
+                ('NodeSocketFloat', {'name':'A', 'default_value':0.500, 'min_value':-10000.0, 'max_value':10000.0}),
                 ('NodeSocketFloat', {'name':'B', 'default_value':0.500, 'min_value':-10000.0, 'max_value':10000.0})])
             self.addOutputs([('NodeSocketInt', {'name':'Value', 'enabled':False}),
                 ('NodeSocketInt', {'name':'Value', 'enabled':False}),
                 ('NodeSocketInt', {'name':'Value'}),
                 ('NodeSocketInt', {'name':'Value', 'enabled':False}),
                 ('NodeSocketInt', {'name':'Value', 'enabled':False}),
+                ('NodeSocketInt', {'name':'Value', 'enabled':False}),
                 ('NodeSocketInt', {'name':'Value', 'enabled':False})])
-            self.addLinks([('inputs[0]', 'nodes["Greater"].inputs[0]'),
-                ('inputs[1]', 'nodes["Greater"].inputs[1]'),
-                ('inputs[0]', 'nodes["Less"].inputs[0]'),
-                ('inputs[1]', 'nodes["Less"].inputs[1]'),
+            self.addLinks([('inputs[0]', 'nodes["Similar"].inputs[1]'),
+                ('inputs[1]', 'nodes["Greater"].inputs[0]'),
+                ('inputs[2]', 'nodes["Greater"].inputs[1]'),
+                ('inputs[1]', 'nodes["Less"].inputs[0]'),
+                ('inputs[2]', 'nodes["Less"].inputs[1]'),
+                ('inputs[1]', 'nodes["Sim01"].inputs[0]'),
+                ('inputs[2]', 'nodes["Sim01"].inputs[1]'),
                 ('nodes["Greater"].outputs[0]', 'outputs[0]'),
                 ('nodes["Less"].outputs[0]', 'outputs[4]'),
                 ('nodes["Greater"].outputs[0]', 'nodes["Math.002"].inputs[0]'),
@@ -58,10 +66,17 @@ class ShaderNodeCompare(ShaderNodeCompact):
                 ('nodes["Equal"].outputs[0]', 'nodes["LessEqual"].inputs[0]'),
                 ('nodes["Less"].outputs[0]', 'nodes["LessEqual"].inputs[1]'),
                 ('nodes["LessEqual"].outputs[0]', 'outputs[3]'),
-                ('nodes["NotEqual"].outputs[0]', 'outputs[5]')])
+                ('nodes["NotEqual"].outputs[0]', 'outputs[5]'),
+                ('nodes["Sim01"].outputs[0]', 'nodes["Sim02"].inputs[0]'),
+                ('nodes["Sim02"].outputs[0]', 'nodes["Similar"].inputs[0]'),
+                ('nodes["Similar"].outputs[0]', 'outputs[6]')])
 
     def ops_update(self, context):
         outs=[]
+        if self.operation=='Similar To':
+            self.inputs[0].enabled=True
+        else:
+            self.inputs[0].enabled=False  
         for i in self.outputs:
             if i.is_linked:
                 for link in i.links:
@@ -74,7 +89,7 @@ class ShaderNodeCompare(ShaderNodeCompact):
             context.space_data.edit_tree.links.new(self.outputs[ind], ln)
 
 
-    ops_items=[('Greater Than', 'Greater Than', 'Greater Than'), ('Greater Than or Equal To', 'Greater Than or Equal To', 'Greater Than or Equal To'), ('Equal To', 'Equal To', 'Equal To'), ('Less Than or Equal To', 'Less Than or Equal To', 'Less Than or Equal To'), ('Less Than', 'Less Than', 'Less Than'), ('Not Equal To', 'Not Equal To', 'Not Equal To')]
+    ops_items=[('Greater Than', 'Greater Than', 'Greater Than'), ('Greater Than or Equal To', 'Greater Than or Equal To', 'Greater Than or Equal To'), ('Equal To', 'Equal To', 'Equal To'), ('Less Than or Equal To', 'Less Than or Equal To', 'Less Than or Equal To'), ('Less Than', 'Less Than', 'Less Than'), ('Not Equal To', 'Not Equal To', 'Not Equal To'), ('Similar To', 'Similar To', 'Similar To')]
     operation=bpy.props.EnumProperty(default = 'Equal To', items = ops_items, name = "Operation", update = ops_update)
 
     def free(self):
