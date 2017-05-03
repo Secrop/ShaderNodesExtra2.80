@@ -79,7 +79,7 @@ class ShaderNodeCompare(ShaderNodeCompact):
 
     def free(self):
         if self.node_tree.users==1:
-            bpy.data.node_groups.remove(self.node_tree)
+            bpy.data.node_groups.remove(self.node_tree, do_unlink=True)
         
     def draw_buttons(self, context, layout):
         layout.prop(self, 'operation', text='')
