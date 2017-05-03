@@ -180,7 +180,7 @@ class ShaderNodeInterpolate(ShaderNodeCompact):
         self.node_tree=node.node_tree.copy()      
      
     def free(self):
-        bpy.data.node_groups.remove(self.node_tree)  
+        bpy.data.node_groups.remove(self.node_tree, do_unlink=True)  
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "interpolation", text='')
