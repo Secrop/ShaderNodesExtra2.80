@@ -42,7 +42,7 @@ class ShaderNodeLoop(bpy.types.NodeCustomGroup):
     def __nodetree_setup__(self):
         self.node_tree.links.clear()
         for node in self.node_tree.nodes:
-            if not (node.name==['Group Input'] or node.name==['Group Output']):
+            if not node.name in ['Group Input','Group Output']:
                 self.node_tree.nodes.remove(node)
         if self.step_nodegroup=='None':
             return        
@@ -73,7 +73,7 @@ class ShaderNodeLoop(bpy.types.NodeCustomGroup):
                 
     step_nodegroup=bpy.props.EnumProperty(name="step_nodegroup", items=nodegroups, update=update_nt)    
     
-    iterations=bpy.props.IntProperty(name="iterations", default=8, update=update_it)
+    iterations=bpy.props.IntProperty(name="iterations", min=1, max=63, default=8, update=update_it)
         
     
     def init(self, context):
@@ -92,4 +92,4 @@ class ShaderNodeLoop(bpy.types.NodeCustomGroup):
         self.node_tree=node.node_tree.copy()
     
     def free(self):
-        bpy.data.node_groups.remove(self.node_tree, do_unlink=True)    
+        bpy.data.node_groups.remove(self.node_tree, do_unlink=True)
