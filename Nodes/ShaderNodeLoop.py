@@ -31,11 +31,9 @@ class ShaderNodeLoop(bpy.types.NodeCustomGroup):
             return
         for input in bpy.data.node_groups[self.step_nodegroup].inputs:
             if not input.name=='iterator':
-                print('Making Input \'' , input.name , '\'')
                 self.node_tree.nodes['Group Input'].outputs.new(input.bl_socket_idname, input.name)
                 self.node_tree.inputs.new(input.bl_socket_idname, input.name)
         for output in bpy.data.node_groups[self.step_nodegroup].outputs:
-            print('Making Output \'' , output.name , '\'')
             self.node_tree.nodes['Group Output'].inputs.new(output.bl_socket_idname, output.name)
             self.node_tree.outputs.new(output.bl_socket_idname, output.name)
     
@@ -53,7 +51,6 @@ class ShaderNodeLoop(bpy.types.NodeCustomGroup):
             curnode.inputs['iterator'].default_value=iter            
             for input in curnode.inputs:
                 poutput=previousnode.outputs.get(input.name)
-                print(poutput)
                 if poutput:
                     self.node_tree.links.new(poutput, input)
             if iter==self.iterations-1:
