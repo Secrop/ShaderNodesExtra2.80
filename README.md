@@ -27,9 +27,15 @@ To use it, select the nodegroup you want to convert into a script, press SPACE a
 The node will be automatically added to the 'Custom Nodes' category, and to change this, one should add a draw_menu function to the node script (located in the 'Nodes' folder inside the Addon path).
 
 At the moment, I'm also sharing some nodes with the purpose to show what is possible..
+
 -DisplacementBake: is a node to help baking displacement maps in a similar fashion as in ZBrush. (Credits to nudelZ)
+
 -NormalBake: will help the creation of tangent normal maps from a normal vector.
+
 -SwitchFloat: is a simple switch, if the 'Switch' input is set to 0, the output will be the 'value1'; if 1, the output will be 'value2'
+
 -Compare: this node will compare two values and return a boolean. It features '>', '>=', '==', '!=', '<=', '<' and '~='.
+
 -Interpolate: as the name says, it will interpolate between two values. Defaults to Lerp(linear interpolation), but also features 'SmoothStep', 'SmootherStep', 'HighPower' and its inverse, 'Sine' and its inverse, 'Cosine' and 'Catmull-Rom' interpolations.
+
 -Loop: A more complex node that uses a nodegroup as a loop step. The nodegroup requires to have an input socket named 'iterator' for feeding the node with the step integer, and at least 1 output with the same name as the input for the data that is trasnfer from each cycle to the next.
