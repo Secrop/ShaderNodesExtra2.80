@@ -25,7 +25,7 @@ class ShaderNodeDisplacementBake(ShaderNodeCompact):
     
     display_items=(('xyz','xyz', 'xyz'),('fas', 'fas', 'fas'))
     
-    output_items=(('0','Position','Position'),('1','Scalar Displacement','Scalar Displacement'), ('2','World Vector Displacement','World Displacement'), ('3','Tangent Vector Displacement','Tangent Displacement'))
+    output_items=(('0','Position','Position'),('1','Scalar Displacement','Scalar Displacement'), ('2','Object Vector Displacement','World Displacement'), ('3','Tangent Vector Displacement','Tangent Displacement'))
     
     def enumupdate(self,context):
         def filteraxis(axis):
@@ -79,7 +79,7 @@ class ShaderNodeDisplacementBake(ShaderNodeCompact):
                 context.space_data.edit_tree.links.remove(self.inputs[1].links[0])
             self.inputs[0].hide=True
             self.inputs[1].hide=True
-            position=self.node_tree.nodes['Geometry'].outputs[0]
+            position=self.node_tree.nodes['Coordinates'].outputs[3]
             self.node_tree.links.new(position, nexit.inputs[0])
             nexit.inputs[1].default_value=1
         else:
@@ -125,7 +125,7 @@ class ShaderNodeDisplacementBake(ShaderNodeCompact):
         self.addOutputs([('NodeSocketShader', {'name':'Vector'})])
         self.addLinks([('nodes["Vector Math"].outputs[0]', 'nodes["ZDot"].inputs[1]'),
             ('inputs[0]', 'nodes["SubPosition"].inputs[0]'),
-            ('nodes["Geometry"].outputs[0]', 'nodes["Emission"].inputs[0]'),
+            ('nodes["Coordinates"].outputs[3]', 'nodes["Emission"].inputs[0]'),
             ('nodes["Emission"].outputs[0]', 'outputs[0]'),
             ('nodes["Coordinates"].outputs[3]', 'nodes["SubPosition"].inputs[1]'),
             ('nodes["Coordinates"].outputs[1]', 'nodes["Vector Math"].inputs[0]'),
