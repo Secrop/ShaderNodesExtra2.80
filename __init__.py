@@ -2,8 +2,8 @@
 bl_info = {
     "name": "ShaderNodesExtra",
     "author": "Secrop",
-    "version": (0, 1, 6),
-    "blender": (2, 78, 0),
+    "version": (0, 1, 5),
+    "blender": (2, 80, 0),
     "location": "Node",
     "description": "Tools for NodeGroups",
     "warning": "This is still is alpha testing. Although, the basic API is complete, please keep your original nodegroups as backup",
@@ -15,7 +15,7 @@ import bpy
 import os, sys, importlib
 import nodeitems_utils
 from nodeitems_utils import NodeCategory, NodeItem, NodeItemCustom
-from nodeitems_builtins import ShaderNewNodeCategory, node_tree_group_type, group_tools_draw, node_group_items
+from nodeitems_builtins import ShaderNodeCategory, node_tree_group_type, group_tools_draw, node_group_items
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import Nodes
 
@@ -171,8 +171,8 @@ class NodeGroupConvert(bpy.types.Operator):
     bl_label = "Convert Selected NodeGroup to PyNode"
     bl_options = {'REGISTER', 'UNDO'}
 
-    nodename=bpy.props.StringProperty(name="bl_name", default="")
-    nodelabel=bpy.props.StringProperty(name="bl_label", default="")
+    nodename: bpy.props.StringProperty(name="bl_name", default="")
+    nodelabel: bpy.props.StringProperty(name="bl_label", default="")
 
     @classmethod
     def poll(cls, context):
@@ -210,11 +210,13 @@ def register_nodes():
         register_node(node)
 
 def unregister_nodes():
+    print(Nodes.listNodes())
     for node in Nodes.listNodes():
+        print('unregister:', node)
         unregister_node(node)
 
 def node_menu_include(catid, catname, node):
-    index, ident, cat, mt, pt=getCategory(catid, catname)
+    index, ident, cat, mt=getCategory(catid, catname)
     if cat:
         itemslist=list(cat.items(context=None))
         for item in itemslist:
@@ -224,19 +226,19 @@ def node_menu_include(catid, catname, node):
         delCat(catid, catname)
     else:
         itemslist=[NodeItem(node.bl_name)]
-    category=ShaderNewNodeCategory(catid, catname, items=itemslist)
+    category=ShaderNodeCategory(catid, catname, items=itemslist)
     addCat(category, index=index)
 
 def node_menu_exclude(catid, catname, node):
-    index, ident, cat, mt, pt=getCategory(catid, catname)
+    index, ident, cat, mt=getCategory(catid, catname)
     if cat:
-        itemslist=list(cat.items(context=None))
+        itemslist=list(cat.items(Context=None))
         for i in itemslist:
             if i.nodetype==node.bl_name:
                 itemslist.remove(i)
         delCat(catid, catname)
     if itemslist:
-        category=ShaderNewNodeCategory(catid, catname, items=itemslist)
+        category=ShaderNodeCategory(catid, catname, items=itemslist)
         addCat(category, index=index)
 
 def getCategory(catid, catname):
@@ -244,17 +246,15 @@ def getCategory(catid, catname):
     for ident in nc:
         for idx, category in enumerate(nc[ident][0]):
             if category.identifier==catid and category.name==catname:
-                return idx, ident, category, nc[ident][2][idx], nc[ident][3][idx]
-    return None, None, None, None, None
+                return idx, ident, category, nc[ident][2][idx]
+    return None, None, None, None
 
 def delCat(catid, catname):
-    index, ident, cat, mt, pt=getCategory(catid, catname)
+    index, ident, cat, mt=getCategory(catid, catname)
     if cat:
         bpy.utils.unregister_class(mt)
-        bpy.utils.unregister_class(pt)
         nodeitems_utils._node_categories[ident][0].remove(cat)
         nodeitems_utils._node_categories[ident][2].remove(mt)
-        nodeitems_utils._node_categories[ident][3].remove(pt)
 
 def addCat(category, ident='SHADER', index=None):
     def draw_node_item(self, context):
@@ -269,25 +269,13 @@ def addCat(category, ident='SHADER', index=None):
         "poll": category.poll,
         "draw": draw_node_item,
         })
-    pt = type("NODE_PT_category_" + category.identifier, (bpy.types.Panel,), {
-        "bl_space_type": 'NODE_EDITOR',
-        "bl_region_type": 'TOOLS',
-        "bl_label": category.name,
-        "bl_category": category.name,
-        "category": category,
-        "poll": category.poll,
-        "draw": draw_node_item,
-        })
     bpy.utils.register_class(mt)
-    bpy.utils.register_class(pt)
     if index:
         nodeitems_utils._node_categories[ident][0].insert(index, category)
         nodeitems_utils._node_categories[ident][2].insert(index, mt)
-        nodeitems_utils._node_categories[ident][3].insert(index, pt)
     else:
         nodeitems_utils._node_categories[ident][0].append(category)
         nodeitems_utils._node_categories[ident][2].append(mt)
-        nodeitems_utils._node_categories[ident][3].append(pt)
 
 def configBlender():
     def new_node_group_items(context):
@@ -328,12 +316,10 @@ def configBlender():
     if not hasattr(bpy.types.ShaderNodeTree, 'is_hidden'):
         bpy.types.ShaderNodeTree.is_hidden=bpy.props.BoolProperty(name="is_hidden", description="Returns True if the node tree is hidden", default=False)
     bpy.types.NODE_MT_category_SH_NEW_GROUP.category.items=new_node_group_items
-    bpy.types.NODE_PT_category_SH_NEW_GROUP.category.items=new_node_group_items
 
 def revertBlender():
     #leaving the is_hidden property on the ShaderNodeTree, as it is harmless.
     bpy.types.NODE_MT_category_SH_NEW_GROUP.category.items=node_group_items
-    bpy.types.NODE_PT_category_SH_NEW_GROUP.category.items=node_group_items
 
 def register():
     #to hide nodes private trees from the group menu, uncomment the following line, and the revertBlender in unregister()
@@ -342,9 +328,9 @@ def register():
     register_nodes()
 
 def unregister():
-    revertBlender()
-    bpy.utils.unregister_class(NodeGroupConvert)
     unregister_nodes()
+    bpy.utils.unregister_class(NodeGroupConvert)
+    revertBlender()
 
 if __name__ == "__main__":
     register()

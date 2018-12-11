@@ -4,7 +4,7 @@
 #
 #   Node Description: Node for creating loops over some nodegroup
 #
-#   version: (0,0,3)
+#   version: (0,1,0)
 #
 
 import bpy
@@ -68,9 +68,9 @@ class ShaderNodeLoop(bpy.types.NodeCustomGroup):
     def update_it(self, context):
         self.__nodetree_setup__()
                 
-    step_nodegroup=bpy.props.EnumProperty(name="step_nodegroup", items=nodegroups, update=update_nt)    
+    step_nodegroup: bpy.props.EnumProperty(name="step_nodegroup", items=nodegroups, update=update_nt)    
     
-    iterations=bpy.props.IntProperty(name="iterations", min=1, max=63, default=8, update=update_it)
+    iterations: bpy.props.IntProperty(name="iterations", min=1, max=63, default=8, update=update_it)
         
     
     def init(self, context):

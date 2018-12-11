@@ -40,10 +40,10 @@ class ShaderNodeNormalBake(ShaderNodeCompact):
     def uvmapupdate(self, context):
         self.node_tree.nodes['Tangent'].uv_map=self.uvmap
             
-    axis_X = bpy.props.EnumProperty(default = 'X', items = axis_items, name = "X_list", update = axisupdate)
-    axis_Y = bpy.props.EnumProperty(default = 'Y',items = axis_items, name = "Y_list", update = axisupdate)
-    axis_Z = bpy.props.EnumProperty(default = 'Z',items = axis_items, name = "Z_list", update = axisupdate)                                                 
-    uvmap = bpy.props.StringProperty(name = 'UV Map',default = '', update = uvmapupdate)
+    axis_X: bpy.props.EnumProperty(default = 'X', items = axis_items, name = "X_list", update = axisupdate)
+    axis_Y: bpy.props.EnumProperty(default = 'Y',items = axis_items, name = "Y_list", update = axisupdate)
+    axis_Z: bpy.props.EnumProperty(default = 'Z',items = axis_items, name = "Z_list", update = axisupdate)                                                 
+    uvmap: bpy.props.StringProperty(name = 'UV Map',default = '', update = uvmapupdate)
 
     def init(self, context):
         self.node_tree = bpy.data.node_groups.new(self.bl_name+'nodetree', 'ShaderNodeTree')
