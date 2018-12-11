@@ -92,7 +92,7 @@ class ShaderNodeCompare(ShaderNodeCompact):
 
 
     ops_items=[('Greater Than', 'Greater Than', 'Greater Than'), ('Greater Than or Equal To', 'Greater Than or Equal To', 'Greater Than or Equal To'), ('Equal To', 'Equal To', 'Equal To'), ('Less Than or Equal To', 'Less Than or Equal To', 'Less Than or Equal To'), ('Less Than', 'Less Than', 'Less Than'), ('Not Equal To', 'Not Equal To', 'Not Equal To'), ('Similar To', 'Similar To', 'Similar To')]
-    operation=bpy.props.EnumProperty(default = 'Equal To', items = ops_items, name = "Operation", update = ops_update)
+    operation: bpy.props.EnumProperty(default = 'Equal To', items = ops_items, name = "Operation", update = ops_update)
 
     def free(self):
         if self.node_tree.users==1:
