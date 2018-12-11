@@ -4,7 +4,7 @@
 #
 #   Node Description: Interpolation Node
 #
-#   version: (0,1,0)
+#   version: (0,1,1)
 #
 
 import bpy
@@ -58,7 +58,7 @@ class ShaderNodeInterpolate(ShaderNodeCompact):
         self.addLinks([(src, out)])    
     
     
-    interpolation=bpy.props.EnumProperty(name='interpolation', items=interpolation_list, default='LIN', update=interpol_update)                    
+    interpolation: bpy.props.EnumProperty(name='interpolation', items=interpolation_list, default='LIN', update=interpol_update)                    
 
 
     def init(self, context):
