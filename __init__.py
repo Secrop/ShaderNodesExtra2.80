@@ -171,8 +171,8 @@ class NodeGroupConvert(bpy.types.Operator):
     bl_label = "Convert Selected NodeGroup to PyNode"
     bl_options = {'REGISTER', 'UNDO'}
 
-    nodename=bpy.props.StringProperty(name="bl_name", default="")
-    nodelabel=bpy.props.StringProperty(name="bl_label", default="")
+    nodename: bpy.props.StringProperty(name="bl_name", default="")
+    nodelabel: bpy.props.StringProperty(name="bl_label", default="")
 
     @classmethod
     def poll(cls, context):
