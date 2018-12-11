@@ -1,3 +1,10 @@
+
+This version is for Blender2.80
+ATM, there are some issues with nodes categories, as they are shared with Eevee. Still don't know how to solve this but I'll figure it out.
+(Note that these nodes don't work with Eevee. They lack a proper pointer to the gpufunc()!!)
+
+Another problem is the abnormal recreation of nodetrees in 2.80. I think it's a bug in Blender... Need to profile this error.
+
 # ShaderNodesExtra
 Utilities for Cycles PyNodes
 
