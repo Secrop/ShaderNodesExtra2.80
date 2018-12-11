@@ -4,7 +4,7 @@
 #
 #   Node Description: Utility node for baking various Displacement maps
 #
-#   version: (0,1,1)
+#   version: (0,1,2)
 #
 
 import bpy
@@ -94,13 +94,13 @@ class ShaderNodeDisplacementBake(ShaderNodeCompact):
             self.node_tree.links.new(self.node_tree.nodes['Group Input'].outputs[1], nexit.inputs[1])
 
 
-    axis_X = bpy.props.EnumProperty(default = 'X', items = axis_items, name = "X_list", update = axisupdate)
-    axis_Y = bpy.props.EnumProperty(default = 'Y',items = axis_items, name = "Y_list", update = axisupdate)
-    axis_Z = bpy.props.EnumProperty(default = 'Z',items = axis_items, name = "Z_list", update = axisupdate)                                                 
-    zenum = bpy.props.IntProperty(default = 25, name = 'FlipAndSwitch', min = 1, max = 48, update = enumupdate)
-    uvmap = bpy.props.StringProperty(name = 'UV Map',default = '', update = uvmapupdate)
-    display = bpy.props.EnumProperty(default = 'FlipAndSwitch' , items = (('XYZ','XYZ', 'Custom XYZ'),('FlipAndSwitch', 'ZBrush', 'Zbrush Compatible'))) # to be added : , ('Presets', 'Presets', 'Presets')
-    outvalue = bpy.props.EnumProperty(default = '0' , items = output_items, name = 'Output', update=outputupdate)
+    axis_X: bpy.props.EnumProperty(default = 'X', items = axis_items, name = "X_list", update = axisupdate)
+    axis_Y: bpy.props.EnumProperty(default = 'Y',items = axis_items, name = "Y_list", update = axisupdate)
+    axis_Z: bpy.props.EnumProperty(default = 'Z',items = axis_items, name = "Z_list", update = axisupdate)                                                 
+    zenum: bpy.props.IntProperty(default = 25, name = 'FlipAndSwitch', min = 1, max = 48, update = enumupdate)
+    uvmap: bpy.props.StringProperty(name = 'UV Map',default = '', update = uvmapupdate)
+    display: bpy.props.EnumProperty(default = 'FlipAndSwitch' , items = (('XYZ','XYZ', 'Custom XYZ'),('FlipAndSwitch', 'ZBrush', 'Zbrush Compatible'))) # to be added : , ('Presets', 'Presets', 'Presets')
+    outvalue: bpy.props.EnumProperty(default = '0' , items = output_items, name = 'Output', update=outputupdate)
     
     def init(self, context):
         self.width = 200
