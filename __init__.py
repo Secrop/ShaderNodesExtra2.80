@@ -24,6 +24,8 @@ import Nodes
 menu_def_id='SH_EXTRA'
 menu_def_name='Custom Nodes'
 
+#store registered nodes here for later unregister:
+_reg_nodes=[]
 
 def NodesPath():
     path=os.path.dirname(os.path.realpath(__file__)) + '/Nodes'
@@ -190,6 +192,7 @@ def register_node(node):
     module=importlib.import_module('Nodes.' + node)
     nodeclass=getattr(module, node)
     bpy.utils.register_class(nodeclass)
+    _reg_nodes.append(nodeclass)
     if hasattr(nodeclass, 'draw_menu'):
         catid, catname = nodeclass.draw_menu()
     else:
@@ -197,23 +200,21 @@ def register_node(node):
     node_menu_include(catid, catname, nodeclass)
 
 def unregister_node(node):
-    nodeclass=getattr(bpy.types, node)
-    if hasattr(nodeclass, 'draw_menu'):
-        catid, catname=nodeclass.draw_menu()
+    if hasattr(node, 'draw_menu'):
+        catid, catname=node.draw_menu()
     else:
         catid, catname= menu_def_id, menu_def_name
-    node_menu_exclude(catid, catname, nodeclass)
-    bpy.utils.unregister_class(nodeclass)
+    node_menu_exclude(catid, catname, node)
+    bpy.utils.unregister_class(node)
 
 def register_nodes():
     for node in Nodes.listNodes():
         register_node(node)
 
 def unregister_nodes():
-    print(Nodes.listNodes())
-    for node in Nodes.listNodes():
-        print('unregister:', node)
+    for node in _reg_nodes:
         unregister_node(node)
+    _reg_nodes.clear()    
 
 def node_menu_include(catid, catname, node):
     index, ident, cat, mt=getCategory(catid, catname)
@@ -232,7 +233,7 @@ def node_menu_include(catid, catname, node):
 def node_menu_exclude(catid, catname, node):
     index, ident, cat, mt=getCategory(catid, catname)
     if cat:
-        itemslist=list(cat.items(Context=None))
+        itemslist=list(cat.items(context=None))
         for i in itemslist:
             if i.nodetype==node.bl_name:
                 itemslist.remove(i)
