@@ -2,7 +2,7 @@
 bl_info = {
     "name": "ShaderNodesExtra",
     "author": "Secrop",
-    "version": (0, 1, 5),
+    "version": (0, 1, 6),
     "blender": (2, 80, 0),
     "location": "Node",
     "description": "Tools for NodeGroups",
@@ -15,7 +15,7 @@ import bpy
 import os, sys, importlib
 import nodeitems_utils
 from nodeitems_utils import NodeCategory, NodeItem, NodeItemCustom
-from nodeitems_builtins import ShaderNodeCategory, node_tree_group_type, group_tools_draw, node_group_items
+from nodeitems_builtins import ShaderNodeCategory, SortedNodeCategory, cycles_shader_nodes_poll, node_tree_group_type, group_tools_draw, node_group_items
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import Nodes
 
@@ -188,6 +188,13 @@ class NodeGroupConvert(bpy.types.Operator):
     def execute(self, context):
         return exportNodetree(context.active_node.node_tree.id_data, self.nodename, self.nodelabel)
 
+class CyclesShaderNodeCategory(SortedNodeCategory):
+    @classmethod
+    def poll(cls, context):
+        return context.space_data.tree_type == 'ShaderNodeTree' and context.engine == 'CYCLES'
+
+_eevee_polls=['eevee_shader_nodes_poll', 'eevee_cycles_shader_nodes_poll', 'object_eevee_shader_nodes_poll', 'object_eevee_cycles_shader_nodes_poll']    
+    
 def register_node(node):
     module=importlib.import_module('Nodes.' + node)
     nodeclass=getattr(module, node)
@@ -217,29 +224,47 @@ def unregister_nodes():
     _reg_nodes.clear()    
 
 def node_menu_include(catid, catname, node):
+    only_cycles=True
     index, ident, cat, mt=getCategory(catid, catname)
     if cat:
         itemslist=list(cat.items(context=None))
         for item in itemslist:
             if item.nodetype==node.bl_name:
                 return
-        itemslist.append(NodeItem(node.bl_name))
+            if item.poll:
+                if item.poll.__code__.co_name in _eevee_polls:
+                    only_cycles=False
+            else:
+                only_cycles=False
+        itemslist.append(NodeItem(node.bl_name, poll=cycles_shader_nodes_poll))
         delCat(catid, catname)
     else:
-        itemslist=[NodeItem(node.bl_name)]
-    category=ShaderNodeCategory(catid, catname, items=itemslist)
+        itemslist=[NodeItem(node.bl_name, poll=cycles_shader_nodes_poll)]
+    if only_cycles:    
+        category=CyclesShaderNodeCategory(catid, catname, items=itemslist)
+    else:
+        category=ShaderNodeCategory(catid, catname, items=itemslist)
     addCat(category, index=index)
 
 def node_menu_exclude(catid, catname, node):
+    only_cycles=True
     index, ident, cat, mt=getCategory(catid, catname)
     if cat:
         itemslist=list(cat.items(context=None))
         for i in itemslist:
             if i.nodetype==node.bl_name:
                 itemslist.remove(i)
+            if item.poll:
+                if item.poll.__code__.co_name in _eevee_polls:
+                    only_cycles=False
+            else:
+                only_cycles=False
         delCat(catid, catname)
     if itemslist:
-        category=ShaderNodeCategory(catid, catname, items=itemslist)
+        if only_cycles:
+            category=CyclesShaderNodeCategory(catid, catname, items=itemslist)
+        else:
+            category=ShaderNodeCategory(catid, catname, items=itemslist)
         addCat(category, index=index)
 
 def getCategory(catid, catname):
