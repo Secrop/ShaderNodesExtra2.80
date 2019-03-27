@@ -17,7 +17,7 @@ class ShaderNodeBase(bpy.types.NodeCustomGroup):
         setattr(obj, path, val)                
     
     def setupTree(self, unique=False):
-        name=self.bl_name + '_nodetree'
+        name='.' + self.bl_name + '_nodetree'
         if unique or bpy.data.node_groups.find(name)==-1:
             self.node_tree=bpy.data.node_groups.new(name + '_nodetree', 'ShaderNodeTree')
             self.addNode('NodeGroupInput', {'name':'Group Input'})
