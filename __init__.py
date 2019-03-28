@@ -116,7 +116,7 @@ def exportNodetree(nodetree, bl_name, bl_label):
     file=open(filepath, 'w')
     file.write('import bpy\n')
     file.write('from ShaderNodeBase import ShaderNodeBase\n\n')
-    file.write('class ' + bl_name + '(ShaderNodeBase):\n\n')
+    file.write('class ' + bl_name + '(bpy.types.ShaderNodeCustomGroup, ShaderNodeBase):\n\n')
     file.write('    bl_name=\'' + bl_name + '\'\n')
     file.write('    bl_label=\'' + bl_label + '\'\n')
     file.write('    bl_icon=\'NONE\'\n\n')
