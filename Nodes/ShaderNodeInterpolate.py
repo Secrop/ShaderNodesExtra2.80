@@ -10,12 +10,12 @@
 import bpy
 from ShaderNodeBase import ShaderNodeCompact
 
-class ShaderNodeInterpolate(ShaderNodeCompact):
+class ShaderNodeInterpolate(bpy.types.ShaderNodeCustomGroup, ShaderNodeCompact):
 
     bl_name='ShaderNodeInterpolate'
     bl_label='Interpolate'
     bl_icon='NONE'
-    
+
     interpolation_list=[('LIN', 'Lerp', 'Lerp'),
                         ('SMTS', 'SmoothStep', 'SmoothStep'),
                         ('SMTRS', 'SmootherStep', 'SmootherStep'),
@@ -25,7 +25,7 @@ class ShaderNodeInterpolate(ShaderNodeCompact):
                         ('ISIN', 'Invert Sine', 'InvSine'),
                         ('COS', 'Cos', 'CosPi'),
                         ('CTMR', 'Catmull-Rom', 'Catmull-Rom')]
-    
+
     def interpol_update(self, context):
         out=self.node_tree.nodes['MIXENTRY'].inputs[0]
         if out.is_linked:
@@ -55,10 +55,10 @@ class ShaderNodeInterpolate(ShaderNodeCompact):
             self.inputs[2].enabled=True
             self.inputs[3].enabled=True
             src='nodes["CATMULLROM"].outputs[0]'
-        self.addLinks([(src, out)])    
-    
-    
-    interpolation: bpy.props.EnumProperty(name='interpolation', items=interpolation_list, default='LIN', update=interpol_update)                    
+        self.addLinks([(src, out)])
+
+
+    interpolation: bpy.props.EnumProperty(name='interpolation', items=interpolation_list, default='LIN', update=interpol_update)
 
 
     def init(self, context):
@@ -177,18 +177,17 @@ class ShaderNodeInterpolate(ShaderNodeCompact):
             ('inputs[0]', 'nodes["MIXENTRY"].inputs[0]')])
 
     def copy(self, node):
-        self.node_tree=node.node_tree.copy()      
-     
+        self.node_tree=node.node_tree.copy()
+
     def free(self):
-        bpy.data.node_groups.remove(self.node_tree, do_unlink=True)  
+        bpy.data.node_groups.remove(self.node_tree, do_unlink=True)
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "interpolation", text='')
-    
+
     def draw_label(self):
         idx=self.bl_rna.properties['interpolation'].enum_items.find(self.interpolation)
         return self.bl_rna.properties['interpolation'].enum_items[idx].name
-        
-    def draw_menu():
-        return 'SH_NEW_CONVERTOR' , 'Converter'    
 
+    def draw_menu():
+        return 'SH_NEW_CONVERTOR' , 'Converter'

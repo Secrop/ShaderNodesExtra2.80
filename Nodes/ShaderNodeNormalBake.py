@@ -10,7 +10,7 @@
 import bpy
 from ShaderNodeBase import ShaderNodeCompact
 
-class ShaderNodeNormalBake(ShaderNodeCompact):
+class ShaderNodeNormalBake(bpy.types.ShaderNodeCustomGroup, ShaderNodeCompact):
 
     bl_name='ShaderNodeNormalBake'
     bl_label='Normal Bake'
@@ -22,7 +22,7 @@ class ShaderNodeNormalBake(ShaderNodeCompact):
         ('-Y', '-Y', 'NEG_Y'),
         ('Z', 'Z', 'POS_Z'),
         ('-Z', '-Z', 'NEG_Z'))
-    
+
     def axisupdate(self, context):
         if (self.axis_X.lstrip('-')==self.axis_Y.lstrip('-')) or (self.axis_X.lstrip('-')==self.axis_Z.lstrip('-')) or (self.axis_Y.lstrip('-')==self.axis_Z.lstrip('-')):
             return
@@ -35,14 +35,14 @@ class ShaderNodeNormalBake(ShaderNodeCompact):
             tosocket=self.node_tree.nodes['FinalCombine'].inputs[i]
             if tosocket.is_linked:
                 self.node_tree.links.remove(tosocket.links[0])
-            self.node_tree.links.new(fromsocket, tosocket)    
+            self.node_tree.links.new(fromsocket, tosocket)
 
     def uvmapupdate(self, context):
         self.node_tree.nodes['Tangent'].uv_map=self.uvmap
-            
+
     axis_X: bpy.props.EnumProperty(default = 'X', items = axis_items, name = "X_list", update = axisupdate)
     axis_Y: bpy.props.EnumProperty(default = 'Y',items = axis_items, name = "Y_list", update = axisupdate)
-    axis_Z: bpy.props.EnumProperty(default = 'Z',items = axis_items, name = "Z_list", update = axisupdate)                                                 
+    axis_Z: bpy.props.EnumProperty(default = 'Z',items = axis_items, name = "Z_list", update = axisupdate)
     uvmap: bpy.props.StringProperty(name = 'UV Map',default = '', update = uvmapupdate)
 
     def init(self, context):
@@ -64,8 +64,8 @@ class ShaderNodeNormalBake(ShaderNodeCompact):
             ('ShaderNodeSeparateRGB', {'name':'Negative'}),
             ('ShaderNodeSeparateRGB', {'name':'Positive'}),
             ('ShaderNodeCombineRGB', {'name':'FinalCombine', 'inputs[0].default_value':0.000, 'inputs[1].default_value':0.000, 'inputs[2].default_value':0.000}),
-            ('ShaderNodeEmission', {'name':'EmiClosure', 'inputs[1].default_value':1.0})])       
-        self.addInputs([('NodeSocketVector', {'name':'Normal', 'hide_value':True})])        
+            ('ShaderNodeEmission', {'name':'EmiClosure', 'inputs[1].default_value':1.0})])
+        self.addInputs([('NodeSocketVector', {'name':'Normal', 'hide_value':True})])
         self.addOutputs([('NodeSocketShader', {'name':'Tangent'})])
         self.addLinks([('nodes["Geometry"].outputs[1]', 'nodes["CoTangent"].inputs[0]'),
             ('nodes["Tangent"].outputs[0]', 'nodes["CoTangent"].inputs[1]'),
@@ -92,14 +92,14 @@ class ShaderNodeNormalBake(ShaderNodeCompact):
 
     def copy(self, node):
         self.node_tree=node.node_tree.copy()
-    
+
     def free(self):
         bpy.data.node_groups.remove(self.node_tree, do_unlink=True)
-        
+
     def draw_buttons(self, context, layout):
         row=layout.row(align=True)
         row.alert=(self.axis_X.lstrip('-')==self.axis_Y.lstrip('-') or self.axis_X.lstrip('-')==self.axis_Z.lstrip('-'))
-        row.prop(self, 'axis_X', text='')  
+        row.prop(self, 'axis_X', text='')
         row.alert=(self.axis_Y.lstrip('-')==self.axis_X.lstrip('-') or self.axis_Y.lstrip('-')==self.axis_Z.lstrip('-'))
         row.prop(self, 'axis_Y', text='')
         row.alert=(self.axis_Z.lstrip('-')==self.axis_X.lstrip('-') or self.axis_Z.lstrip('-')==self.axis_Y.lstrip('-'))
@@ -108,4 +108,4 @@ class ShaderNodeNormalBake(ShaderNodeCompact):
         row.prop_search(self, "uvmap", context.active_object.data, "uv_layers", icon='GROUP_UVS')
 
     def draw_menu():
-        return 'SH_NEW_BakeTools' , 'Bake Nodes'    
+        return 'SH_NEW_BakeTools' , 'Bake Nodes'

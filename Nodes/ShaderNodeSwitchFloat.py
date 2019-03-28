@@ -10,7 +10,7 @@
 import bpy
 from ShaderNodeBase import ShaderNodeCompact
 
-class ShaderNodeSwitchFloat(ShaderNodeCompact):
+class ShaderNodeSwitchFloat(bpy.types.ShaderNodeCustomGroup, ShaderNodeCompact):
 
     bl_name='ShaderNodeSwitchFloat'
     bl_label='Switch Float'
@@ -20,7 +20,7 @@ class ShaderNodeSwitchFloat(ShaderNodeCompact):
         name=self.bl_name + '_nodetree'
         if bpy.data.node_groups.find(name)>-1:
             self.node_tree=bpy.data.node_groups[name]
-        else:    
+        else:
             self.node_tree=bpy.data.node_groups.new(name, 'ShaderNodeTree')
             if hasattr(self.node_tree, 'is_hidden'):
                 self.node_tree.is_hidden=True
@@ -48,6 +48,6 @@ class ShaderNodeSwitchFloat(ShaderNodeCompact):
     def free(self):
         if self.node_tree.users==1:
             bpy.data.node_groups.remove(self.node_tree, do_unlink=True)
-            
+
     def draw_menu():
         return 'SH_NEW_CONVERTOR' , 'Converter'

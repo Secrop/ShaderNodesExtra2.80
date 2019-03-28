@@ -10,19 +10,19 @@
 import bpy
 from ShaderNodeBase import ShaderNodeCompact
 
-class ShaderNodeCompare(ShaderNodeCompact):
+class ShaderNodeCompare(bpy.types.ShaderNodeCustomGroup, ShaderNodeCompact):
 
     bl_name='ShaderNodeCompare'
     bl_label='Compare'
     bl_icon='NONE'
-                        
+
     def init(self, context):
         name=self.bl_name + '_nodetree'
         if bpy.data.node_groups.find(name)>-1:
             self.node_tree=bpy.data.node_groups[name]
             for ind in [0,2,3,4,5]:
                 self.outputs[ind].enabled=False
-        else:    
+        else:
             self.node_tree=bpy.data.node_groups.new(name, 'ShaderNodeTree')
             if hasattr(self.node_tree, 'is_hidden'):
                 self.node_tree.is_hidden=True
@@ -78,14 +78,14 @@ class ShaderNodeCompare(ShaderNodeCompact):
         if self.operation=='Similar To':
             self.inputs[0].enabled=True
         else:
-            self.inputs[0].enabled=False  
+            self.inputs[0].enabled=False
         for i in self.outputs:
             if i.is_linked:
                 for link in i.links:
                     outs.append(link.to_socket)
                     context.space_data.edit_tree.links.remove(link)
             i.enabled=False
-        ind=self.bl_rna.properties['operation'].enum_items.find(self.operation)               
+        ind=self.bl_rna.properties['operation'].enum_items.find(self.operation)
         self.outputs[ind].enabled=True
         for ln in outs:
             context.space_data.edit_tree.links.new(self.outputs[ind], ln)
@@ -97,13 +97,13 @@ class ShaderNodeCompare(ShaderNodeCompact):
     def free(self):
         if self.node_tree.users==1:
             bpy.data.node_groups.remove(self.node_tree, do_unlink=True)
-        
+
     def draw_buttons(self, context, layout):
         layout.prop(self, 'operation', text='')
-        
+
     def draw_label(self):
         idx=self.bl_rna.properties['operation'].enum_items.find(self.operation)
         return self.bl_rna.properties['operation'].enum_items[idx].name
-        
+
     def draw_menu():
         return 'SH_NEW_CONVERTOR' , 'Converter'
