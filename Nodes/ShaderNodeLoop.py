@@ -9,7 +9,7 @@
 
 import bpy
 
-class ShaderNodeLoop(bpy.types.NodeCustomGroup):
+class ShaderNodeLoop(bpy.types.ShaderNodeCustomGroup):
     
     bl_name='ShaderNodeLoop'
     bl_label='Loop Node'
@@ -74,9 +74,8 @@ class ShaderNodeLoop(bpy.types.NodeCustomGroup):
         
     
     def init(self, context):
-        self.node_tree=bpy.data.node_groups.new(self.bl_name, 'ShaderNodeTree')
-        if hasattr(self.node_tree, 'is_hidden'):
-            self.node_tree.is_hidden=True
+        ntname = '.' + self.bl_name
+        self.node_tree=bpy.data.node_groups.new(ntname, 'ShaderNodeTree')
         self.node_tree.nodes.new('NodeGroupInput')
         self.node_tree.nodes.new('NodeGroupOutput') 
     
