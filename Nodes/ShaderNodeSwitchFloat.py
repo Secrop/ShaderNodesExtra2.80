@@ -17,13 +17,11 @@ class ShaderNodeSwitchFloat(ShaderNodeCompact):
     bl_icon='NONE'
 
     def init(self, context):
-        name=self.bl_name + '_nodetree'
-        if bpy.data.node_groups.find(name)>-1:
-            self.node_tree=bpy.data.node_groups[name]
+        ntname= '.' + self.bl_name + '_nodetree'
+        if bpy.data.node_groups.find(ntname)>-1:
+            self.node_tree=bpy.data.node_groups[ntname]
         else:    
-            self.node_tree=bpy.data.node_groups.new(name, 'ShaderNodeTree')
-            if hasattr(self.node_tree, 'is_hidden'):
-                self.node_tree.is_hidden=True
+            self.node_tree=bpy.data.node_groups.new(ntname, 'ShaderNodeTree')
             self.addNodes([('NodeGroupInput', {'name':'Group Input'}),
                 ('NodeGroupOutput', {'name':'Group Output'}),
                 ('ShaderNodeMath', {'name':'Math', 'operation':'GREATER_THAN', 'use_clamp':0.0, 'inputs[1].default_value':0.0}),
