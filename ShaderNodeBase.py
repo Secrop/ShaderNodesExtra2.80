@@ -1,6 +1,6 @@
 import bpy
 
-class ShaderNodeBase(bpy.types.NodeCustomGroup):
+class ShaderNodeBase(bpy.types.ShaderNodeCustomGroup):
       
     def __path_resolve__(self, obj, path):
         if "." in path:
