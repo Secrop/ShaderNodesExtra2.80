@@ -2,7 +2,7 @@
 bl_info = {
     "name": "ShaderNodesExtra",
     "author": "Secrop",
-    "version": (0, 1, 6),
+    "version": (0, 2, 0),
     "blender": (2, 80, 0),
     "location": "Node",
     "description": "Tools for NodeGroups",
@@ -303,60 +303,13 @@ def addCat(category, ident='SHADER', index=None):
         nodeitems_utils._node_categories[ident][0].append(category)
         nodeitems_utils._node_categories[ident][2].append(mt)
 
-def configBlender():
-    def new_node_group_items(context):
-        if context is None:
-            return
-        space = context.space_data
-        if not space:
-            return
-        ntree = space.edit_tree
-        if not ntree:
-            return
-
-        yield NodeItemCustom(draw=group_tools_draw)
-
-        def contains_group(nodetree, group):
-            if nodetree == group:
-                return True
-            else:
-                for node in nodetree.nodes:
-                    if node.bl_idname in node_tree_group_type.values() and node.node_tree is not None:
-                        if contains_group(node.node_tree, group):
-                            return True
-            return False
-
-        for group in context.blend_data.node_groups:
-            if group.bl_idname != ntree.bl_idname:
-                continue
-            # filter out recursive groups
-            if contains_group(group, ntree):
-                continue
-            # filter hidden shadertrees
-            if group.is_hidden:
-                continue
-            yield NodeItem(node_tree_group_type[group.bl_idname],
-                           group.name,
-                           {"node_tree": "bpy.data.node_groups[%r]" % group.name})
-
-    if not hasattr(bpy.types.ShaderNodeTree, 'is_hidden'):
-        bpy.types.ShaderNodeTree.is_hidden=bpy.props.BoolProperty(name="is_hidden", description="Returns True if the node tree is hidden", default=False)
-    bpy.types.NODE_MT_category_SH_NEW_GROUP.category.items=new_node_group_items
-
-def revertBlender():
-    #leaving the is_hidden property on the ShaderNodeTree, as it is harmless.
-    bpy.types.NODE_MT_category_SH_NEW_GROUP.category.items=node_group_items
-
 def register():
-    #to hide nodes private trees from the group menu, uncomment the following line, and the revertBlender in unregister()
-    configBlender()
     bpy.utils.register_class(NodeGroupConvert)
     register_nodes()
 
 def unregister():
     unregister_nodes()
     bpy.utils.unregister_class(NodeGroupConvert)
-    revertBlender()
 
 if __name__ == "__main__":
     register()
