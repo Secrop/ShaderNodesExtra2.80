@@ -46,9 +46,8 @@ class ShaderNodeNormalBake(ShaderNodeCompact):
     uvmap: bpy.props.StringProperty(name = 'UV Map',default = '', update = uvmapupdate)
 
     def init(self, context):
-        self.node_tree = bpy.data.node_groups.new(self.bl_name+'nodetree', 'ShaderNodeTree')
-        if hasattr(self.node_tree, 'is:hidden'):
-            self.node_tree.is_hidden=True
+        ntname = '.' + self.bl_name + 'nodetree'
+        self.node_tree = bpy.data.node_groups.new(ntname, 'ShaderNodeTree')
         self.addNodes([('NodeGroupInput', {'name':'Group Input'}),
             ('NodeGroupOutput', {'name':'Group Output'}),
             ('ShaderNodeNewGeometry', {'name':'Geometry'}),
