@@ -101,7 +101,7 @@ class ShaderNodeBase(bpy.types.ShaderNodeCustomGroup):
             socket=self.node_tree.path_resolve(socket)
         self.node_tree.outputs.remove(socket)
     
-class ShaderNodeCompact(bpy.types.NodeCustomGroup):
+class ShaderNodeCompact(bpy.types.ShaderNodeCustomGroup):
     def __path_resolve__(self, obj, path):
         if "." in path:
             extrapath, path= path.rsplit(".", 1)
