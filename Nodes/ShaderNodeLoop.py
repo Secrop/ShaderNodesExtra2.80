@@ -74,7 +74,7 @@ class ShaderNodeLoop(bpy.types.ShaderNodeCustomGroup):
         
     
     def init(self, context):
-        ntname = '.' + self.bl_name
+        ntname = '.' + self.bl_name + '_nodetree'
         self.node_tree=bpy.data.node_groups.new(ntname, 'ShaderNodeTree')
         self.node_tree.nodes.new('NodeGroupInput')
         self.node_tree.nodes.new('NodeGroupOutput') 
