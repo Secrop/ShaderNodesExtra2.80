@@ -17,15 +17,13 @@ class ShaderNodeCompare(ShaderNodeCompact):
     bl_icon='NONE'
                         
     def init(self, context):
-        name=self.bl_name + '_nodetree'
+        name = '.' + self.bl_name + '_nodetree'
         if bpy.data.node_groups.find(name)>-1:
             self.node_tree=bpy.data.node_groups[name]
             for ind in [0,2,3,4,5]:
                 self.outputs[ind].enabled=False
         else:    
             self.node_tree=bpy.data.node_groups.new(name, 'ShaderNodeTree')
-            if hasattr(self.node_tree, 'is_hidden'):
-                self.node_tree.is_hidden=True
             self.addNodes([('NodeGroupInput', {'name':'Group Input'}),
                 ('NodeGroupOutput', {'name':'Group Output'}),
                 ('ShaderNodeMath', {'name':'Math.002', 'operation':'MAXIMUM', 'use_clamp':0.0}),
