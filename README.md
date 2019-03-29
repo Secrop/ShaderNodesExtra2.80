@@ -1,9 +1,4 @@
 
-This version is for Blender2.80
-(Note that these nodes don't work with Eevee. They lack a proper pointer to the gpufunc()!!)
-
-One persistent problem in 2.80 is the abnormal recreation of nodetrees dued to depsgrah_copy_on_write... This must be fixed in the source code.
-
 # ShaderNodesExtra
 Utilities for Cycles PyNodes
 
