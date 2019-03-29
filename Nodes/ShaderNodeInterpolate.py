@@ -62,10 +62,8 @@ class ShaderNodeInterpolate(ShaderNodeCompact):
 
 
     def init(self, context):
-        name=self.bl_name + '_nodetree'
-        self.node_tree=bpy.data.node_groups.new(name, 'ShaderNodeTree')
-        if hasattr(self.node_tree, 'is_hidden'):
-            self.node_tree.is_hidden=True
+        ntname = '.' + self.bl_name + '_nodetree'
+        self.node_tree=bpy.data.node_groups.new(ntname, 'ShaderNodeTree')
         self.addNodes([('NodeGroupInput', {'name':'Group Input'}),
             ('NodeGroupOutput', {'name':'Group Output'}),
             ('ShaderNodeMath', {'name':'CAT01', 'operation':'SUBTRACT', 'use_clamp':0.0, 'inputs[0].default_value':1.0}),
