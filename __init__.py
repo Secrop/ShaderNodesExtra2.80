@@ -254,8 +254,8 @@ def node_menu_exclude(catid, catname, node):
         for i in itemslist:
             if i.nodetype==node.bl_name:
                 itemslist.remove(i)
-            if item.poll:
-                if item.poll.__code__.co_name in _eevee_polls:
+            if i.poll:
+                if i.poll.__code__.co_name in _eevee_polls:
                     only_cycles=False
             else:
                 only_cycles=False
