@@ -22,8 +22,6 @@ class ShaderNodeBase(bpy.types.ShaderNodeCustomGroup):
             self.node_tree=bpy.data.node_groups.new(name + '_nodetree', 'ShaderNodeTree')
             self.addNode('NodeGroupInput', {'name':'Group Input'})
             self.addNode('NodeGroupOutput', {'name':'Group Output'})
-            if hasattr(self.node_tree, 'is_hidden'):
-                self.node_tree.is_hidden=True
             if hasattr(self, 'defaultNodeTree'):
                 self.defaultNodeTree()
             elif hasattr(self, 'defaultNodeScript'):
